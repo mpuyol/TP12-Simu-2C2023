@@ -59,16 +59,16 @@ def obtener_DEC():
         return 1
 
 
-def llegada():
-
-
-
-def resultados():
-
-
 
 def realizar_simulacion():
-
+    T = T + 1
+    R1 = random.uniform(0, 1)
+    if R1 <= 0.05:
+        EVENTO = "Tormenta"
+        VELTV = obtener_VELVT()
+        EGM = VELTV * CANTMV 
+        
+    elif R1 <= 0.15:
 
     resultados()
 
