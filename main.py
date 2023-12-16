@@ -122,10 +122,10 @@ def realizar_simulacion():
             FAL = FAL + DEC - SE # Cantidad de energia faltante
             SE = 0
         
-        if T < TF:
-            continue
-        else:
+        if T == TF:
             break
+        else:
+            continue
     
     resultados()
 
