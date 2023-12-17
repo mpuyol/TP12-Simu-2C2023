@@ -34,100 +34,115 @@ VELTV = 0  # Velocidad del viento en tormenta
 DESP = 0  # Cantidad de energia desperdiciada
 FAL = 0  # Cantidad de energia faltante
 DEC = 0  # Demanda de energia electrica
-
-
+EA = 0
+SEGM = 0
+SEGP = 0
+CDISA = 0
+CDI = 0
+PMEGMV = 0
+PMEGPS = 0
+PPENCD = 0
+PPEANCD = 0
+PMEPE = 0
 
 def obtener_VELV():
-    while True:
-        pass
-       # R = random.uniform(0, 1)
-       # TA = 14.5 * math.sqrt(2) * math.sqrt(-math.log(1 - R))  # Aca iria la funcion de la distribucion de probabilidad
-        return 1
-
+    # TODO: Poner la fdp que realmente es
+    return random.uniform(3.888, 11.94)
 
 def obtener_VELVT():
-    while True:
-        pass
-       # R = random.uniform(0, 1)
-       # TA = 14.5 * math.sqrt(2) * math.sqrt(-math.log(1 - R))
-        return 1
+    # TODO: Poner la fdp que realmente es
+    return random.uniform(8.431, 18.217)
 
+def obtener_potencia(Velocidad_viento):
+    # TODO: Poner la funcion que realmente es
+    return 2000 + Velocidad_viento
 
 def obtener_EGPS():
-    while True:
-        pass
-       # R = random.uniform(0, 1)
-       # TA = 14.5 * math.sqrt(2) * math.sqrt(-math.log(1 - R))
-        return 1
-    
+    # TODO: Poner la fdp que realmente es
+    return random.uniform(21, 42)
 
 def obtener_DEC():
-    while True:
-        pass
-       # R = random.uniform(0, 1)
-       # TA = 14.5 * math.sqrt(2) * math.sqrt(-math.log(1 - R))
-        return 1
+    # TODO: Poner la fdp que realmente es 
+    return random.uniform(100, 120)
 
-def resultados():
+def impresion_de_resultados():
     print("\n\n### Resultados ###\n\n")
     print("Cantidad de molinos de viento: ", CANTMV)
     print("Cantidad de paneles solares: ", CANTPN)
     print("Cantidad de almacenamiento de energia electrica: ", CAAEE)
-    print("Cantidad de energia electrica desperdiciada: ", DESP)
-    print("Cantidad de energia electrica faltante: ", FAL)
-    print("Cantidad de energia electrica producida: ", SE)
-    print("Cantidad de energia electrica consumida: ", DEC)
-    print("Cantidad de energia electrica producida por los molinos de viento: ", EGM)
-    print("Cantidad de energia electrica producida por los paneles solares: ", EGP)
+
+    print("Promedio Mensual de Energía Generada por Molinos de Viento: PMEGMV = ", PMEGMV, "MW")
+    print("Promedio Mensual de Energía Generada por Paneles Solares: PMEGPS = ", PMEGPS, "MW")
+    print("Promedio Mensual de Energía Generada en Total: PMEGT = ", PMEGMV + PMEGPS)
+    print("Porcentaje de días en el que la Producción Energética del día no logró cubrir la demanda de la ciudad: PPENCD = ", PPENCD, "%")
+    print("Porcentaje de días en que la Producción energética del día y la energía almacenada no lograron cubrir la demanda de la ciudad: PPEANCD = ", PPEANCD, "%")
+    print("Promedio Mensual de Excedente de Producción Energética Desperdiciada: PMEPE = ", PMEPE, "MW")
+
     print("\n\n### Fin de la simulacion ###\n\n")
 
 
 def realizar_simulacion():
-    global T, TF, EVENTO, SE, EGPS, EGM, EGP, VELV, VELTV, CANTMV, CANTPN, CAAEE, HV, DESP, FAL, DEC
+    global T, TF, EVENTO, SE, EGPS, EGM, EGP, VELV, VELTV, CANTMV, CANTPN, CAAEE, HV, DESP, FAL, DEC, EA, SEGM, SEGP, CDISA, CDI, PMEGMV, PMEGPS, PPENCD, PPEANCD, PMEPE
 
     while True:
         T = T + 1
         EGPS = obtener_EGPS()
         R1 = random.uniform(0, 1)
-
         if R1 <= 0.05:
             EVENTO = "Tormenta"
             VELTV = obtener_VELVT() 
-            EGM = VELTV * CANTMV 
+            EGM = obtener_potencia(VELTV) * CANTMV 
             EGP = EGPS * CANTPN * 0.2 # 20% de eficiencia en tormenta para los paneles
         else:
             VELV = obtener_VELV()
-            EGM = VELV * CANTMV  
-            if R1 <= 0.22:
+            EGM = obtener_potencia(VELV) * CANTMV  
+            if R1 <= 0.23:
                 EVENTO = "Lluvia"
                 EGP = EGPS * CANTPN * 0.4 # 40% de eficiencia en dia lluviso para los paneles
             else:
                 EVENTO = "Soleado"
                 EGP = EGPS * CANTPN # 100% de eficiencia en normal para los paneles
         
-        SE = SE + EGP + EGM
+        EA = SE # Energia almacenada del dia anterior
+        SE = SE + (EGP + EGM)/1000
         R2 = random.uniform(0, 1)
 
         if R2 <= 0.05:
-            EVENTO = "Manetenimiento"
-            SE = SE - EGM * 0.2 # 20% de produccion perdida por mantenimiento
+            EVENTO = "Mantenimiento"
+            SE = SE - (EGM * 0.2)/1000 # 20% de produccion perdida por mantenimiento
+            SEGM = SEGM + (EGM * 0.2)/1000 # Sumatoria de energia generada por molinos
+        else:
+            SEGM = SEGM + EGM/1000 
+
+        SEGP = SEGP + EGP/1000 # Sumatoria de energia generada por paneles
 
         DEC = obtener_DEC()
-        if SE > DEC:
+        if (SE - EA) < DEC:
+            CDISA = CDISA + 1 # Cantidad de veces que no se cumplio la demanda sin usar lo almacenado
+            if SE > DEC:
+                SE = SE - DEC
+            else:
+                CDI = CDI + 1 # Cantidad de demandas diarias incumplidas
+                FAL = FAL + DEC - SE # Cantidad de energia faltante # TODO: Revisar si se deja porque no se usa
+                SE = 0
+        else:
             SE = SE - DEC
             if SE > CAAEE:
-                SE = CAAEE
                 DESP = DESP + SE - CAAEE # Cantidad de energia desperdiciada
-        else:
-            FAL = FAL + DEC - SE # Cantidad de energia faltante
-            SE = 0
-        
+                SE = CAAEE
+
         if T == TF:
             break
         else:
             continue
     
-    resultados()
+    PMEGMV = (SEGM/T)*30
+    PMEGPS = (SEGP/T)*30
+    PPENCD = (CDISA/T)*100
+    PPEANCD = (CDI/T)*100
+    PMEPE = (DESP/T) *30
+
+    impresion_de_resultados()
 
 def main():
     print("\n\n### Comenzando simulacion ###\n\n")
