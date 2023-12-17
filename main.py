@@ -15,7 +15,7 @@ while True:
         ### VARIABLES DE CONTROL ###
         CANTMV = int(input("Cantidad de molinos de viento (M): "))
         CANTPN = int(input("Cantidad de paneles solares (P): "))
-        CAAEE = int(input("Cantidad de almacenamiento de energia electrica (CAAEE): "))
+        CAAEE = int(input("Cantidad de almacenamiento de energia electrica (MW) (CAAEE): "))
 
         break
     except ValueError:
@@ -53,6 +53,7 @@ PMEGPS = 0
 PPENCD = 0
 PPEANCD = 0
 PMEPE = 0
+COSTOS = 0
 
 # Definir la función de error para minimizar
 def error_function(params, velocidad, potencia):
@@ -83,7 +84,7 @@ def potencia_generada_en_velocidad(velocidad, velocidad_viento, potencia, optima
 
 
 
-
+## Definición de las FDP
 def obtener_VELV():
     # TODO: Poner la fdp que realmente es
     #return random.uniform(3.888, 11.94)
@@ -107,30 +108,43 @@ def obtener_DEC():
     # TODO: Poner la fdp que realmente es 
     return random.uniform(100, 120)
 
+
+## Calculo de Resultados
+def calculo_de_resultados():
+    global PMEGMV, PMEGPS, PPENCD, PPEANCD, PMEPE, COSTOS, CANTMV, CANTPN
+
+    PMEGMV = (SEGM/T)*30
+    PMEGPS = (SEGP/T)*30
+    PPENCD = (CDISA/T)*100
+    PPEANCD = (CDI/T)*100
+    PMEPE = (DESP/T) *30
+    COSTOS = 1500000 * CANTMV + 300 * CANTPN
+
+## Impresión de Resultados
 def impresion_de_resultados():
     print("\n\n### Resultados ###\n\n")
-    print("Cantidad de molinos de viento: ", CANTMV)
-    print("Cantidad de paneles solares: ", CANTPN)
-    print("Cantidad de almacenamiento de energia electrica: ", CAAEE)
+    print(f"Cantidad de molinos de viento: {CANTMV}")
+    print(f"Cantidad de paneles solares: {CANTPN}")
+    print(f"Cantidad de almacenamiento de energia electrica: {CAAEE} MW")
 
-    print("Promedio Mensual de Energía Generada por Molinos de Viento: PMEGMV = ", PMEGMV, "MW")
-    print("Promedio Mensual de Energía Generada por Paneles Solares: PMEGPS = ", PMEGPS, "MW")
-    print("Promedio Mensual de Energía Generada en Total: PMEGT = ", PMEGMV + PMEGPS)
-    print("Porcentaje de días en el que la Producción Energética del día no logró cubrir la demanda de la ciudad: PPENCD = ", PPENCD, "%")
-    print("Porcentaje de días en que la Producción energética del día y la energía almacenada no lograron cubrir la demanda de la ciudad: PPEANCD = ", PPEANCD, "%")
-    print("Promedio Mensual de Excedente de Producción Energética Desperdiciada: PMEPE = ", PMEPE, "MW")
+    print(f"Promedio Mensual de Energía Generada por Molinos de Viento: PMEGMV = {PMEGMV} MW")
+    print(f"Promedio Mensual de Energía Generada por Paneles Solares: PMEGPS = {PMEGPS} MW")
+    print(f"Promedio Mensual de Energía Generada en Total: PMEGT = {PMEGMV + PMEGPS} MW")
+    print(f"Porcentaje de días en el que la Producción Energética del día no logró cubrir la demanda de la ciudad: PPENCD = {PPENCD} %")
+    print(f"Porcentaje de días en que la Producción energética del día y la energía almacenada no lograron cubrir la demanda de la ciudad: PPEANCD = {PPEANCD} %")
+    print(f"Promedio Mensual de Excedente de Producción Energética Desperdiciada: PMEPE = {PMEPE} MW")
+    print(f"El Costo total para implementar el Parque Renovable es de {COSTOS} U$")
 
-    print("\n\n### Fin de la simulacion ###\n\n")
 
-
+## Ejecución de la simulación
 def realizar_simulacion():
     global T, TF, EVENTO, SE, EGPS, EGM, EGP, VELV, VELTV, CANTMV, CANTPN, CAAEE, HV, DESP, FAL, DEC, EA, SEGM, SEGP, CDISA, CDI, PMEGMV, PMEGPS, PPENCD, PPEANCD, PMEPE
 
     while True:
         T = T + 1
         print(f"\n\n###################### DIA NUEVO #############################\n")
-        EGPS = obtener_EGPS()
 
+        EGPS = obtener_EGPS()
         print(f"Potencia estimada del día por cada Panel Solar: {EGPS} KW")
 
         R1 = random.uniform(0, 1)
@@ -162,21 +176,24 @@ def realizar_simulacion():
 
                 EGP = EGPS * CANTPN # 100% de eficiencia en normal para los paneles
         
-        print(f"Energía producida por Paneles Solares: {EGP} KW")
-        print(f"Energia producida por Molinos de Viento: {EGM} KW")
+        print(f"Energía producida por Paneles Solares en el día: {EGP} KW")
+        print(f"Energia producida por Molinos de Viento en el día : {EGM} KW")
 
         EA = SE # Energia almacenada del dia anterior
         SE = SE + (EGP + EGM)/1000
 
-        print(f"\nEnergia almacenada: {EA} MW.")
-        print(f"Energia producida en el día {T}: {SE} MW.\n")
+        print(f"\nEnergia almacenada del día anterior: {EA} MW.")
+        print(f"Energia producida en el día {T}: {(EGP + EGM)/1000} MW.")
+        print(f"Energia almacenada actualmente: {SE} MW.")
 
         R2 = random.uniform(0, 1)
 
         if R2 <= 0.05:
             EVENTO = "Mantenimiento"
             print(f"\n\n#### DIA: {EVENTO}####")
+
             SE = SE - (EGM * 0.2)/1000 # 20% de produccion perdida por mantenimiento
+            print(f"Energia almacenada luego del Mantenimiento: {SE} MW.")
             SEGM = SEGM + (EGM * 0.2)/1000 # Sumatoria de energia generada por molinos
         else:
             SEGM = SEGM + EGM/1000 
@@ -184,15 +201,16 @@ def realizar_simulacion():
         SEGP = SEGP + EGP/1000 # Sumatoria de energia generada por paneles
 
         DEC = obtener_DEC()
-
-        print(f"\nEnergía demandada por la ciudad: {DEC} MW\n")
+        print(f"\nEnergía demandada por la ciudad en el día {T}: {DEC} MW\n")
 
         if (SE - EA) < DEC:
-            print("\n### DIA NO CUMPLIDO ###\n")
+            print("\n### DIA NO CUMPLIDO SIN USAR LO ALMACENADO ###\n")
             CDISA = CDISA + 1 # Cantidad de veces que no se cumplio la demanda sin usar lo almacenado
             if SE > DEC:
+                print("\n### DIA CUMPLIDO USANDO LO ALMACENADO ###\n")
                 SE = SE - DEC
             else:
+                print("\n### DIA NO CUMPLIDO ###\n")
                 CDI = CDI + 1 # Cantidad de demandas diarias incumplidas
                 FAL = FAL + DEC - SE # Cantidad de energia faltante # TODO: Revisar si se deja porque no se usa
                 SE = 0
@@ -201,20 +219,18 @@ def realizar_simulacion():
             SE = SE - DEC
             if SE > CAAEE:
                 DESP = DESP + SE - CAAEE # Cantidad de energia desperdiciada
+                print(f"Se desperdicia {DESP} MW en el día {T}\n")
                 SE = CAAEE
 
         if T == TF:
             break
         else:
             continue
-    
-    PMEGMV = (SEGM/T)*30
-    PMEGPS = (SEGP/T)*30
-    PPENCD = (CDISA/T)*100
-    PPEANCD = (CDI/T)*100
-    PMEPE = (DESP/T) *30
+
+    calculo_de_resultados()
 
     impresion_de_resultados()
+    print("\n\n### Fin de la simulacion ###\n\n")
 
 def main():
     print("\n\n### Comenzando simulacion ###\n\n")
