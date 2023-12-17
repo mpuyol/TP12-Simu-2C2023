@@ -54,6 +54,8 @@ PPENCD = 0
 PPEANCD = 0
 PMEPE = 0
 COSTOS = 0
+COSTOMV = 1500000
+COSTOPN = 300
 
 # Definir la función de error para minimizar
 def error_function(params, velocidad, potencia):
@@ -106,26 +108,26 @@ def obtener_EGPS():
 
 def obtener_DEC():
     # TODO: Poner la fdp que realmente es 
-    return random.uniform(100, 120)
+    return round(random.uniform(100, 120), 2)
 
 
 ## Calculo de Resultados
 def calculo_de_resultados():
-    global PMEGMV, PMEGPS, PPENCD, PPEANCD, PMEPE, COSTOS, CANTMV, CANTPN
+    global PMEGMV, PMEGPS, PPENCD, PPEANCD, PMEPE, COSTOS, CANTMV, COSTOMV, CANTPN, COSTOPN
 
     PMEGMV = (SEGM/T)*30
     PMEGPS = (SEGP/T)*30
     PPENCD = (CDISA/T)*100
     PPEANCD = (CDI/T)*100
     PMEPE = (DESP/T) *30
-    COSTOS = 1500000 * CANTMV + 300 * CANTPN
+    COSTOS = COSTOMV * CANTMV + COSTOPN * CANTPN
 
 ## Impresión de Resultados
 def impresion_de_resultados():
     print("\n\n### Resultados ###\n\n")
     print(f"Cantidad de molinos de viento: {CANTMV}")
     print(f"Cantidad de paneles solares: {CANTPN}")
-    print(f"Cantidad de almacenamiento de energia electrica: {CAAEE} MW")
+    print(f"Cantidad de almacenamiento de energia electrica: {CAAEE} MW\n")
 
     print(f"Promedio Mensual de Energía Generada por Molinos de Viento: PMEGMV = {PMEGMV} MW")
     print(f"Promedio Mensual de Energía Generada por Paneles Solares: PMEGPS = {PMEGPS} MW")
