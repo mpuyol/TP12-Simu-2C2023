@@ -88,13 +88,14 @@ def potencia_generada_en_velocidad(velocidad, velocidad_viento, potencia, optima
 
 ## Definición de las FDP
 def obtener_VELV():
-    # TODO: Poner la fdp que realmente es
-    #return random.uniform(3.888, 11.94)
-    return round(random.uniform(4.888, 11.94), 2)
+    R = random.uniform(0.0000005, 1)  
+    VEL = 14.2 - 0.0000017 * math.sqrt(9.92016e13 - 4.19716e12 * math.log(1.829920032919027e10 * R))
+    return round(VEL, 2)
 
 def obtener_VELVT():
-    # TODO: Poner la fdp que realmente es
-    return round(random.uniform(8.431, 22.217), 2)
+    R = random.uniform(0,1)
+    VEL =  (8.2 + 0.00024 * math.sqrt(2.56e10 - 7.4018e8 * math.log(1.042641726081656e15 * R)))
+    return round(VEL, 2)
 
 def obtener_potencia(velocidad_dada):
   potencia_estimada = round(int(potencia_generada_en_velocidad(velocidad_dada, velocidad_viento, potencia, optimal_epsilon)),2)
