@@ -93,8 +93,8 @@ def obtener_VELV():
     return round(random.uniform(4.888, 11.94), 2)
 
 def obtener_VELVT():
-    # TODO: Poner la fdp que realmente es
-    return round(random.uniform(8.431, 22.217), 2)
+    x = random.uniform(0.001, 1)  
+    return  (8.2 + 0.00024 * math.sqrt(2.56e10 - 7.4018e8 * math.log(1.042641726081656e15 * x)))
 
 def obtener_potencia(velocidad_dada):
   potencia_estimada = round(int(potencia_generada_en_velocidad(velocidad_dada, velocidad_viento, potencia, optimal_epsilon)),2)
