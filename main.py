@@ -33,7 +33,7 @@ potencia = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 169, 280, 404, 585, 768, 106
 
 
 T = 0  # Tiempo actual
-TF = 10 #365 * 4   # 4 años
+TF = 365 * 4 # 4 años
 SE = 0  # Suma de energia electrica
 EGPS = 0  # Energia generada por los paneles solares
 EGM = 0  # Energia generada por los molinos de viento
@@ -104,22 +104,23 @@ def obtener_potencia(velocidad_dada):
   return potencia_estimada
 
 def obtener_EGPS():
-    # TODO: Poner la fdp que realmente es
-    return round(random.uniform(21, 42), 2)
+    R = random.uniform(0, 1)
+    EGPS = 21 + 0.0000038 * math.sqrt(9.92013e13 - 4.19721e12 * math.log(1.829920032919018e10 * R)) 
+    return round(EGPS, 2)
 
 def obtener_DEC():
-    # TODO: Poner la fdp que realmente es 
-    return round(random.uniform(100, 120), 2)
-
+    R = random.uniform(0.0005, 0.5) 
+    DEC = 100 + (0.000005929 * math.sqrt(58.48079e8 * R - 0.1181e8 * R**2)) / R
+    return round(DEC, 2)
 
 ## Calculo de Resultados
 def calculo_de_resultados():
     global PMEGMV, PMEGPS, PPENCD, PPEANCD, PMEPE, COSTOS, CANTMV, COSTOMV, CANTPN, COSTOPN
 
-    PMEGMV = (SEGM/T)*30
-    PMEGPS = (SEGP/T)*30
-    PPENCD = (CDISA/T)*100
-    PPEANCD = (CDI/T)*100
+    PMEGMV = (SEGM/T) *30
+    PMEGPS = (SEGP/T) *30
+    PPENCD = (CDISA/T) *100
+    PPEANCD = (CDI/T) *100
     PMEPE = (DESP/T) *30
     COSTOS = COSTOMV * CANTMV + COSTOPN * CANTPN
 
