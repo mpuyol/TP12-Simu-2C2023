@@ -189,7 +189,6 @@ def realizar_simulacion():
                 SE = SE - DEC
             else:
                 CDI = CDI + 1 # Cantidad de demandas diarias incumplidas
-                FAL = FAL + DEC - SE # Cantidad de energia faltante # TODO: Revisar si se deja porque no se usa
                 SE = 0
         else:
             SE = SE - DEC
