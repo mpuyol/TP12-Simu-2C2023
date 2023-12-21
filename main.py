@@ -33,7 +33,7 @@ potencia = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 169, 280, 404, 585, 768, 106
 
 
 T = 0  # Tiempo actual
-TF = 365 * 4 # 4 años
+TF = 365 * 10 # 10 años
 SE = 0  # Suma de energia electrica
 EGPS = 0  # Energia generada por los paneles solares
 EGM = 0  # Energia generada por los molinos de viento
